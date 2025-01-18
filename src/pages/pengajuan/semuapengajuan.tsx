@@ -83,6 +83,16 @@ const SemuaPengajuan = () => {
             }  
         }  
     };  
+
+    const [userData, setUserData] = useState(null);  
+  
+    useEffect(() => {  
+        // Ambil data pengguna dari localStorage  
+        const storedUserData = localStorage.getItem('user_data');  
+        if (storedUserData) {  
+            setUserData(JSON.parse(storedUserData)); // Konversi string ke objek  
+        }  
+    }, []); 
   
     // Filter and paginate data  
     const filteredData = data.filter((item) => {  
@@ -98,15 +108,21 @@ const SemuaPengajuan = () => {
     if (loading) return <div>Loading...</div>;  
     if (error) return <div>Error loading data: {error.message}</div>;  
   
+  
     return (  
         <div>  
             <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">  
                 <h1 className="flex items-center gap-2">SEMUA PENGAJUAN |</h1>  
-                <div className="ltr:ml-auto rtl:mr-auto">  
+                <div className="ltr:ml-auto rtl:mr-auto"> 
+                {userData && userData.id_departemen !== '27' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '40' &&  userData.id_departemen !== '29' &&(  
+ 
+                    <>
                     <Link to="/pengajuan/tambahpengajuan" className="btn btn-primary gap-2">  
                         <IconPlus />  
                         Tambah Pengajuan  
-                    </Link>  
+                    </Link> 
+                    </>
+                )}
                 </div>  
             </div>  
             <input  
@@ -127,16 +143,21 @@ const SemuaPengajuan = () => {
                             { accessor: 'kode_entity', title: 'Entity' },  
                             { accessor: 'nama_customer', title: 'Customer Name' },  
                             { accessor: 'nomor_pengajuan', title: 'Nomor Pengajuan' },  
-                            { accessor: 'tanggal', title: 'Tanggal Pengajuan', render: (record) => new Date(record.tanggal).toLocaleDateString() },  
-                            { accessor: 'title', title: 'Pengajuan' },  
-                            {  
+                            {   
+                                accessor: 'tanggal',   
+                                title: 'Tanggal Pengajuan',   
+                                render: (record) => new Date(record.tanggal).toLocaleDateString('id-ID', {   
+                                    day: 'numeric',   
+                                    month: 'long',   
+                                    year: 'numeric'   
+                                })   
+                            },  
+                             
+                            ...(userData && userData.id_departemen !== '27'  && userData.id_departemen !== '2'  && userData.id_departemen !== '39' && userData.id_departemen !== '34'  && userData.id_departemen !== '37'&& userData.id_departemen !== '40' && userData.id_departemen !== '29' ? [{  
                                 accessor: 'Aksi',  
                                 title: 'Aksi',  
                                 render: (record) => (  
                                     <div className="flex gap-2">  
-                                        <Link to={`/pengajuan/detailpengajuan/${record.id}`} className="btn btn-info btn-sm">  
-                                            Detail  
-                                        </Link>  
                                         <Link to={`/pengajuan/editpengajuan/${record.id}`} className="btn btn-warning btn-sm">  
                                             Edit  
                                         </Link>  
@@ -145,7 +166,7 @@ const SemuaPengajuan = () => {
                                         </button>  
                                     </div>  
                                 ),  
-                            },  
+                            }] : []), // Jika id_departemen adalah 27, kolom ini tidak akan ditambahkan  
                         ]}  
                         totalRecords={filteredData.length}  
                         page={page}  

@@ -126,6 +126,8 @@ const EditPengajuan = () => {
     const [isOpen, setIsOpen] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [tanggal, setTanggal] = useState<Date | null>(null);
+    const [noUrut, setNoUrut] = useState(1); // Tambahkan state untuk nomor urutan  
+
 
     useEffect(() => {
         dispatch(setPageTitle('Edit Pengajuan'));
@@ -218,10 +220,36 @@ const EditPengajuan = () => {
     };
     
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { id, value } = e.target;
-        setFormData((prev) => ({ ...prev, [id]: value }));
-    };
+   // Fungsi untuk mengupdate formData  
+   const handleInputChange = (e) => {    
+    const { id, value } = e.target;    
+  
+    // Menghapus format rupiah sebelum menyimpan ke state  
+    const numericValue = value.replace(/\./g, '').replace(/,/g, '.'); // Menghapus titik dan mengganti koma dengan titik  
+    const newValue = id.includes('percent') || id.includes('nominal') || id.includes('total') || id.includes('gaji') || id.includes('balance') ? Number(numericValue) : value;    
+  
+    setFormData((prev) => ({    
+        ...prev,    
+        [id]: newValue // Update nilai berdasarkan id    
+    }));    
+  
+    // Update nomor_pengajuan jika id adalah no_urut  
+    if (id === 'no_urut') {  
+        setNoUrut(newValue); // Update state noUrut  
+        setFormData((prev) => ({  
+            ...prev,  
+            nomor_pengajuan: formatNomorPengajuan(tanggal) + `-${newValue}` // Update nomor_pengajuan  
+        }));  
+    }  
+  
+    // Recalculate selisih_a jika total_invoice atau total_pengajuan berubah    
+    if (id === 'total_invoice' || id === 'total_pengajuan') {    
+        setFormData((prev) => ({    
+            ...prev,    
+            selisih_a: calculateSelisihA(prev.total_invoice, prev.total_pengajuan)    
+        }));    
+    }    
+}; 
 
     const handleKodeEntityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedKodeEntity = e.target.value;

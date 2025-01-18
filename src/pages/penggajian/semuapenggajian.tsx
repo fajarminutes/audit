@@ -74,6 +74,21 @@ const SemuaPenggajian = () => {
     fetchPayrollData();
   }, [dispatch]);
 
+   const showToast = (icon, title) => {                
+          const toast = Swal.mixin({                
+              toast: true,                
+              position: 'top-end',                
+              showConfirmButton: false,                
+              timer: 3000,                
+              padding: '10px 20px',                
+          });                
+          toast.fire({                
+              icon: icon,                
+              title: title,                
+              padding: '10px 20px',                
+          });                
+      };      
+
   const handleDelete = async (id) => {
     Swal.fire({
       title: 'Anda yakin?',
@@ -90,10 +105,10 @@ const SemuaPenggajian = () => {
           await axios.delete(
             `https://audtrax.sinarjernihsuksesindo.id/backend/api/payrolls/${id}`
           );
-          Swal.fire('Berhasil!', 'Data payroll berhasil dihapus.', 'success');
+          showToast('success', 'Data payroll berhasil dihapus');
           setPayrolls((prev) => prev.filter((payroll) => payroll.id !== id));
         } catch (error) {
-          Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus data.', 'error');
+          showToast('error', 'Terjadi kesalahan saat menghapus data.');
         }
       }
     });

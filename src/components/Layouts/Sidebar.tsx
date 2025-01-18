@@ -57,6 +57,20 @@ const Sidebar = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location]);
 
+    const [userData, setUserData] = useState(null);  
+  
+    useEffect(() => {  
+        // Ambil data pengguna dari localStorage  
+        const storedUserData = localStorage.getItem('user_data');  
+        if (storedUserData) {  
+            setUserData(JSON.parse(storedUserData)); // Konversi string ke objek  
+        }  
+    }, []);  
+  
+    if (!userData) {  
+        return <div>Loading...</div>; // Tampilkan loading jika data belum ada  
+    }  
+
     return (
         <div className={semidark ? 'dark' : ''}>
             <nav
@@ -137,9 +151,8 @@ const Sidebar = () => {
                                         <li className="menu nav-item">
                                             <button
                                                 type="button"
-                                                className={`${
-                                                    errorSubMenu ? 'open' : ''
-                                                } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
+                                                className={`${errorSubMenu ? 'open' : ''
+                                                    } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
                                                 onClick={() => setErrorSubMenu(!errorSubMenu)}
                                             >
                                                 {t('Master Kode')}
@@ -155,33 +168,31 @@ const Sidebar = () => {
                                                     <li>
                                                         <a href="/invoice/mastercode/tambahmastercode">{t('Tambah Master Kode')}</a>
                                                     </li>
-                                                    <li>
-                                                        <a href="/invoice/mastercode/detailmastercode">{t('Detail Master Kode')}</a>
-                                                    </li>
+
                                                 </ul>
                                             </AnimateHeight>
                                         </li>
-                                        <li>
-                                            <NavLink to="/invoice/semuainvoice">{t('Semua Invoice')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/invoice/tambahinvoice">{t('Tambah Invoice')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/invoice/semualates">{t('Semua Lates')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/invoice/tambahlates">{t('Tambah Lates')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/invoice/detaillates">{t('Detail Lates')}</NavLink>
-                                        </li>
-                                        <li className="menu nav-item">
+
+                                        {/* Menampilkan item menu jika id_departemen bukan 27 */}  
+                                        {userData  && userData.id_departemen !== '27' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '40' && userData.id_departemen !== '29' &&  (   
+                <>
+                <li>  
+                    <NavLink to="/invoice/semuainvoice">{t('Semua Invoice')}</NavLink>  
+                </li>  
+                <li>
+                <NavLink to="/invoice/tambahinvoice">{t('Tambah Invoice')}</NavLink>
+            </li>
+            <li>
+                <NavLink to="/invoice/semualates">{t('Semua Lates')}</NavLink>
+            </li>
+            <li>
+                <NavLink to="/invoice/tambahlates">{t('Tambah Lates')}</NavLink>
+            </li>
+            <li className="menu nav-item">
                                             <button
                                                 type="button"
-                                                className={`${
-                                                    errorSubMenu ? 'open' : ''
-                                                } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
+                                                className={`${errorSubMenu ? 'open' : ''
+                                                    } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
                                                 onClick={() => setErrorSubMenu(!errorSubMenu)}
                                             >
                                                 {t('Pengajuan vs Invoice')}
@@ -197,43 +208,20 @@ const Sidebar = () => {
                                                     <li>
                                                         <a href="/invoice/pengajuanvsinvoice/tambahpengajuanvsinvoice">{t('Tambah Pengajuan vs Invoice')}</a>
                                                     </li>
-                                                    <li>
-                                                        <a href="/invoice/pengajuanvsinvoice/detailpengajuanvsinvoice">{t('Detail Pengajuan vs Invoice')}</a>
-                                                    </li>
+
                                                 </ul>
                                             </AnimateHeight>
                                         </li>
+                </>
+            )}  
+                                        
+                                      
                                     </ul>
                                 </AnimateHeight>
                             </li>
 
-                            <li className="menu nav-item">
-                                <button type="button" className={`${currentMenu === 'Pelanggan' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Pelanggan')}>
-                                    <div className="flex items-center">
-                                        <IconMenuUsers className="group-hover:!text-primary shrink-0" />
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Customer')}</span>
-                                    </div>
-
-                                    <div className={currentMenu !== 'Pelanggan' ? 'rtl:rotate-90 -rotate-90' : ''}>
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-
-                                <AnimateHeight duration={300} height={currentMenu === 'Pelanggan' ? 'auto' : 0}>
-                                    <ul className="sub-menu text-gray-500">
-                                        <li>
-                                            <NavLink to="/pelanggan/semuapelanggan">{t('Semua Pelanggan')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/pelanggan/tambahpelanggan">{t('Tambah Pelanggan')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/pelanggan/rekeningbankpelanggan">{t('Rekening Bank Pelanggan')}</NavLink>
-                                        </li>
-                                    </ul>
-                                </AnimateHeight>
-                            </li>
-
+                            {userData && userData.id_departemen !== '27' && userData.id_departemen !== '3' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '29' &&(
+                                <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Penggajian' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Penggajian')}>
                                     <div className="flex items-center">
@@ -258,9 +246,8 @@ const Sidebar = () => {
                                         <li className="menu nav-item">
                                             <button
                                                 type="button"
-                                                className={`${
-                                                    errorSubMenu ? 'open' : ''
-                                                } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
+                                                className={`${errorSubMenu ? 'open' : ''
+                                                    } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
                                                 onClick={() => setErrorSubMenu(!errorSubMenu)}
                                             >
                                                 {t('Penggajian vs Pengajuan')}
@@ -276,16 +263,18 @@ const Sidebar = () => {
                                                     <li>
                                                         <a href="/penggajian/penggajianvspengajuan/tambahpvsp">{t('Tambah Penggajian vs Pengajuan')}</a>
                                                     </li>
-                                                    <li>
-                                                        <a href="/penggajian/penggajianvspengajuan/detailpvsp">{t('Detail Penggajian vs Pengajuan')}</a>
-                                                    </li>
+
                                                 </ul>
                                             </AnimateHeight>
                                         </li>
                                     </ul>
                                 </AnimateHeight>
                             </li>
+                            </>
+                            )}
 
+{userData  && userData.id_departemen !== '3' &&  userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '40' && userData.id_departemen !== '29' &&(
+                           <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'BPJS' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('BPJS')}>
                                     <div className="flex items-center">
@@ -306,16 +295,20 @@ const Sidebar = () => {
                                         <li>
                                             <NavLink to="/bpjs/tambahdatabpjs">{t('Tambah Data BPJS')}</NavLink>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <NavLink to="/bpjs/bpjstk">{t('BPJS TK')}</NavLink>
                                         </li>
                                         <li>
                                             <NavLink to="/bpjs/bpjskesehatan">{t('BPJS Kesehatan')}</NavLink>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                 </AnimateHeight>
                             </li>
-
+                           </>
+)}
+                        
+                            {userData && userData.id_departemen !== '27' && userData.id_departemen !== '3' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '40' && userData.id_departemen !== '29' && (
+                                <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Pajak' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Pajak')}>
                                     <div className="flex items-center">
@@ -348,6 +341,8 @@ const Sidebar = () => {
                                     </ul>
                                 </AnimateHeight>
                             </li>
+                            </>
+                            )}
 
                             {/* <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Proyek' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Proyek')}>
@@ -376,6 +371,8 @@ const Sidebar = () => {
                                 </AnimateHeight>
                             </li> */}
 
+                             {userData && userData.id_departemen !== '3' && userData.id_departemen !== '27' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' &&  userData.id_departemen !== '34' && userData.id_departemen !== '40' && (
+                                <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Gaji di Muka' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Gaji di Muka')}>
                                     <div className="flex items-center">
@@ -399,7 +396,11 @@ const Sidebar = () => {
                                     </ul>
                                 </AnimateHeight>
                             </li>
+                            </>
+                             )}
 
+                        {userData && userData.id_departemen !== '3' && userData.id_departemen !== '2' && userData.id_departemen !== '34' && userData.id_departemen !== '40' && userData.id_departemen !== '29' && (
+                          <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Non-Penggajian' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Non-Penggajian')}>
                                     <div className="flex items-center">
@@ -423,7 +424,11 @@ const Sidebar = () => {
                                     </ul>
                                 </AnimateHeight>
                             </li>
-
+                          </>
+                        )}
+                            
+                            {userData && userData.id_departemen !== '27' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '40' && userData.id_departemen !== '29' && (
+                                <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Report Pengajuan' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Report Pengajuan')}>
                                     <div className="flex items-center">
@@ -444,12 +449,12 @@ const Sidebar = () => {
                                         <li>
                                             <NavLink to="/reportpengajuan/tambahreport">{t('Tambah Report Pengajuan')}</NavLink>
                                         </li>
-                                        <li>
-                                            <NavLink to="/reportpengajuan/detailreport">{t('Detail Report Pengajuan')}</NavLink>
-                                        </li>
+
                                     </ul>
                                 </AnimateHeight>
                             </li>
+                            </>
+                            )}
 
                             {/* <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'Rekap Pengajuan' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Rekap Pengajuan')}>
@@ -472,6 +477,85 @@ const Sidebar = () => {
                                 </AnimateHeight>
                             </li> */}
 
+                            {userData && userData.id_departemen !== '2' && userData.id_departemen !== '37'  && userData.id_departemen !== '39' && userData.id_departemen !== '34' && userData.id_departemen !== '40' && userData.id_departemen !== '29' && (
+                           <>
+                            <li className="menu nav-item">
+                                <button type="button" className={`${currentMenu === 'Master Data' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('Master Data')}>
+                                    <div className="flex items-center">
+                                        <IconMenuInvoice className="group-hover:!text-primary shrink-0" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('Master Data')}</span>
+                                    </div>
+
+                                    <div className={currentMenu !== 'Master Data' ? 'rtl:rotate-90 -rotate-90' : ''}>
+                                        <IconCaretDown />
+                                    </div>
+                                </button>
+
+                                <AnimateHeight duration={300} height={currentMenu === 'Master Data' ? 'auto' : 0}>
+                                    <ul className="sub-menu text-gray-500">
+
+                                        <li className="menu nav-item">
+                                            <button
+                                                type="button"
+                                                className={`${errorSubMenu ? 'open' : ''
+                                                    } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
+                                                onClick={() => setErrorSubMenu(!errorSubMenu)}
+                                            >
+                                                {t('Customer')}
+                                                <div className={`${errorSubMenu ? 'rtl:rotate-90 -rotate-90' : ''} ltr:ml-auto rtl:mr-auto`}>
+                                                    <IconCaretsDown fill={true} className="w-4 h-4" />
+                                                </div>
+                                            </button>
+                                            <AnimateHeight duration={300} height={errorSubMenu ? 'auto' : 0}>
+                                                <ul className="sub-menu text-gray-500">
+                                                    <li>
+                                                        <NavLink to="/pelanggan/semuapelanggan">{t('Semua Pelanggan')}</NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink to="/pelanggan/tambahpelanggan">{t('Tambah Pelanggan')}</NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink to="/pelanggan/rekeningbankpelanggan">{t('Rekening Bank Pelanggan')}</NavLink>
+                                                    </li>
+                                                </ul>
+                                            </AnimateHeight>
+
+                                            {userData && userData.id_departemen !== '27' &&  ( 
+                                            <>
+                                            <li className="menu nav-item">
+                                                <button
+                                                    type="button"
+                                                    className={`${errorSubMenu ? 'open' : ''
+                                                        } w-full before:bg-gray-300 before:w-[5px] before:h-[5px] before:rounded ltr:before:mr-2 rtl:before:ml-2 dark:text-[#888ea8] hover:bg-gray-100 dark:hover:bg-gray-900`}
+                                                    onClick={() => setErrorSubMenu(!errorSubMenu)}
+                                                >
+                                                    {t('Jabatan')}
+                                                    <div className={`${errorSubMenu ? 'rtl:rotate-90 -rotate-90' : ''} ltr:ml-auto rtl:mr-auto`}>
+                                                        <IconCaretsDown fill={true} className="w-4 h-4" />
+                                                    </div>
+                                                </button>
+                                                <AnimateHeight duration={300} height={errorSubMenu ? 'auto' : 0}>
+                                                    <ul className="sub-menu text-gray-500">
+                                                        <li>
+                                                            <a href="/jabatan/semuajabatan">{t('Semua Jabatan')}</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/jabatan/tambahjabatan">{t('Tambah Jabatan')}</a>
+                                                        </li>
+                                                    </ul>
+                                                </AnimateHeight>
+                                            </li>
+                                            </>
+                                            )}
+                                        </li>
+                                    </ul>
+                                </AnimateHeight>
+                            </li>
+                           </>
+                            )}
+
+                            {userData && userData.id_departemen !== '3' && userData.id_departemen !== '27' && userData.id_departemen !== '2' && userData.id_departemen !== '37' && userData.id_departemen !== '34' && userData.id_departemen !== '39'  &&  userData.id_departemen !== '40' && userData.id_departemen !== '29' &&( 
+                            <>
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'User Management' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('User Management')}>
                                     <div className="flex items-center">
@@ -486,8 +570,8 @@ const Sidebar = () => {
 
                                 <AnimateHeight duration={300} height={currentMenu === 'User Management' ? 'auto' : 0}>
                                     <ul className="sub-menu text-gray-500">
-                                        <li>
-                                            <NavLink to="/">{t('Roles')}</NavLink>
+                                    <li>
+                                            <NavLink to="/data/roles">{t('Roles')}</NavLink>
                                         </li>
                                         <li>
                                             <NavLink to="/data/users">{t('Pengguna')}</NavLink>
@@ -495,6 +579,8 @@ const Sidebar = () => {
                                     </ul>
                                 </AnimateHeight>
                             </li>
+                            </>
+                            )}
                         </ul>
                     </PerfectScrollbar>
                 </div>

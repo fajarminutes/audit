@@ -123,9 +123,9 @@ class SemuaMC extends React.Component<{}, State> {
                                             <Link to={`/invoice/mastercode/editmastercode/${record.id}`} className="btn btn-primary btn-sm">
                                                 Edit
                                             </Link>
-                                            <Link to={`/invoice/mastercode/detailmastercode/${record.id}`} className="btn btn-secondary btn-sm">
+                                            {/* <Link to={`/invoice/mastercode/detailmastercode/${record.id}`} className="btn btn-secondary btn-sm">
                                                 Detail
-                                            </Link>
+                                            </Link> */}
                                         </div>
                                     ),
                                 }))}

@@ -119,9 +119,9 @@ const SemuaInvoice = () => {
                             title: 'Aksi',
                             render: (record) => (
                                 <div className="flex gap-2">
-                                    <Link to={`/invoice/detailinvoice/${record.id}`} className="btn btn-primary btn-sm">
+                                    {/* <Link to={`/invoice/detailinvoice/${record.id}`} className="btn btn-primary btn-sm">
                                         View
-                                    </Link>
+                                    </Link> */}
                                     <Link to={`/invoice/editinvoice/${record.id}`} className="btn btn-dark btn-sm">
                                         Edit
                                     </Link>

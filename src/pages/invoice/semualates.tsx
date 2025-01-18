@@ -85,9 +85,9 @@ const SemuaLates = () => {
                             title: 'Aksi',
                             render: (record: LateRecord) => ( // Use the LateRecord type here  
                                 <div className="flex gap-2">
-                                    <Link to={`/invoice/detaillates/${record.id}`} className="btn btn-primary btn-sm">
+                                    {/* <Link to={`/invoice/detaillates/${record.id}`} className="btn btn-primary btn-sm">
                                         View
-                                    </Link>
+                                    </Link> */}
                                     <Link to={`/invoice/editlates/${record.id}`} className="btn btn-dark btn-sm">
                                         Edit
                                     </Link>

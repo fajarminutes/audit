@@ -19,6 +19,8 @@ const TambahPengajuan = () => {
     };
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [noUrut, setNoUrut] = useState(1); // Tambahkan state untuk nomor urutan  
+
    
     const [tanggal, setTanggal] = useState<Date | null>(null);
 
@@ -29,38 +31,39 @@ const TambahPengajuan = () => {
         tanggal: '',  
         nama_customer: '',  
         nop: '',  
-        mf_5_percent: 0,  
-        bpjs_tk_4_24_percent: 0,  
-        bpjs_tk_2_percent: 0,  
-        pensiun_2_percent: 0,  
-        pensiun_1_percent: 0,  
-        bpjs_kes_4_percent: 0,  
-        bpjs_kes_1_percent: 0,  
-        pph21: 0,  
-        ppn_percent: 0,  
-        pot_talangan_cicilan: 0,  
-        pot_gaji_dimuka: 0,  
-        pot_privy_id: 0,  
-        subtotal_pengajuan_umum: 0,  
-        adjustment: 0,  
-        pph23: 0,  
-        subtotal_adjustment: 0,  
-        total_3: 0,  
-        gaji_gross_pph: 0,  
-        kompensasi_pph: 0,  
-        gaji_gross_non_pph: 0,  
-        cash: 0,  
-        total_bank: 0,  
-        total_invoice: 0,  
-        total_pengajuan: 0,  
-        selisih_a: 0,  
-        selisih_b: 0,  
+        mf_5_percent: '',  
+        bpjs_tk_4_24_percent: '',  
+        bpjs_tk_2_percent: '',  
+        pensiun_2_percent: '',  
+        pensiun_1_percent: '',  
+        bpjs_kes_4_percent: '',  
+        bpjs_kes_1_percent: '',  
+        pph21: '',  
+        ppn_percent: '',  
+        pot_talangan_cicilan: '',  
+        pot_gaji_dimuka: '',  
+        pot_privy_id: '',  
+        subtotal_pengajuan_umum: '',  
+        adjustment: '',  
+        pph23: '',  
+        subtotal_adjustment: '',  
+        total_3: '',  
+        gaji_gross_pph: '',  
+        kompensasi_pph: '',  
+        gaji_gross_non_pph: '',  
+        cash: '',  
+        total_bank: '',  
+        total_invoice: '',  
+        total_pengajuan: '',  
+        selisih_a: '',  
+        selisih_b: '',  
         title: '',  
-        balance: 0,  
+        balance: '',  
         pengajuan_umum_lain2: [],  
         asset_non_penggajian: [],  
         data_bank: []  
-    });   
+    });
+      
 
     useEffect(() => {
         const {
@@ -135,10 +138,6 @@ const TambahPengajuan = () => {
         formData.asset_non_penggajian,
     ]);
     
-    
-
-    
-
     const [kodeEntities, setKodeEntities] = useState([]);
     const [customers, setCustomers] = useState([]);
 
@@ -227,115 +226,37 @@ const TambahPengajuan = () => {
         }
     };
 
+    
      // Fungsi untuk mengupdate formData  
-     const handleInputChange = (e) => {  
-        const { id, value } = e.target;  
+     const handleInputChange = (e) => {    
+        const { id, value } = e.target;    
       
-        // Konversi nilai ke angka jika id berhubungan dengan input number  
-        const newValue = id.includes('percent') || id.includes('nominal') || id.includes('total') || id.includes('gaji') || id.includes('balance') ? Number(value) : value;  
+        // Menghapus format rupiah sebelum menyimpan ke state  
+        const numericValue = value.replace(/\./g, '').replace(/,/g, '.'); // Menghapus titik dan mengganti koma dengan titik  
+        const newValue = id.includes('percent') || id.includes('nominal') || id.includes('total') || id.includes('gaji') || id.includes('balance') ? Number(numericValue) : value;    
       
-        // Update formData secara langsung  
-        setFormData((prev) => ({  
-            ...prev,  
-            [id]: newValue // Update nilai berdasarkan id  
-        }));  
+        setFormData((prev) => ({    
+            ...prev,    
+            [id]: newValue // Update nilai berdasarkan id    
+        }));    
       
-        // Recalculate selisih_a jika total_invoice atau total_pengajuan berubah  
-        if (id === 'total_invoice' || id === 'total_pengajuan') {  
+        // Update nomor_pengajuan jika id adalah no_urut  
+        if (id === 'no_urut') {  
+            setNoUrut(newValue); // Update state noUrut  
             setFormData((prev) => ({  
                 ...prev,  
-                selisih_a: calculateSelisihA(prev.total_invoice, prev.total_pengajuan)  
+                nomor_pengajuan: formatNomorPengajuan(tanggal) + `-${newValue}` // Update nomor_pengajuan  
             }));  
         }  
-    };  
-    
-    
-   // Function to format the date into the desired nomor_pengajuan format
-const formatNomorPengajuan = (date: Date) => {
-    const day = date.getDate(); // Get the day
-    const month = date.getMonth() + 1; // Get the month (0-indexed, so add 1)
-    const year = date.getFullYear().toString().slice(-2); // Get the last two digits of the year
-    return `P.${day}.${month}.${year}`; // Format as P.TANGGAL.BULAN.TAHUN
-};
-
-// Update the date in formData when the date input changes
-const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = new Date(e.target.value); // Get the selected date
-    setTanggal(selectedDate); // Update the local state
-    setFormData(prev => ({
-        ...prev,
-        tanggal: e.target.value, // Update formData
-        nomor_pengajuan: formatNomorPengajuan(selectedDate) // Set nomor_pengajuan based on the selected date
-    }));
-};
-
-    
-
-
-    const calculateSelisihA = (totalInvoice: string | number, totalPengajuan: string | number) => {
-        const invoice = Number(totalInvoice) || 0; // Convert to number, default to 0 if NaN
-        const pengajuan = Number(totalPengajuan) || 0; // Convert to number, default to 0 if NaN
-        return invoice - pengajuan; // Calculate the difference
-    };
-
-   
-    
-
-    const addAssetNonPenggajian = () => {
-        setFormData((prev) => ({
-            ...prev,
-            asset_non_penggajian: [...prev.asset_non_penggajian, { namaBiaya: '', nominal: 0 }]
-        }));
-    };
-    
-    const removeAssetNonPenggajian = (index: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            asset_non_penggajian: prev.asset_non_penggajian.filter((_, i) => i !== index)
-        }));
-    };
-    
-    const handleAssetNonPenggajianChange = (index: number, field: string, value: string | number) => {
-        const newAssetNonPenggajian = [...formData.asset_non_penggajian];
-        newAssetNonPenggajian[index][field] = value;
-        setFormData((prev) => ({ ...prev, asset_non_penggajian: newAssetNonPenggajian }));
-    };
-
-    
-    const addPengajuanLain2 = () => {
-        setFormData((prev) => ({
-            ...prev,
-            pengajuan_umum_lain2: [...prev.pengajuan_umum_lain2, { namaBiaya: '', nominal: 0 }]
-        }));
-    };
-    
-    const removePengajuanLain2 = (index: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            pengajuan_umum_lain2: prev.pengajuan_umum_lain2.filter((_, i) => i !== index)
-        }));
-    };
-    
-    const handlePengajuanLain2Change = (index: number, field: string, value: string | number) => {
-        const newPengajuanLain2 = [...formData.pengajuan_umum_lain2];
-        newPengajuanLain2[index][field] = value;
-        setFormData((prev) => ({ ...prev, pengajuan_umum_lain2: newPengajuanLain2 }));
-    };
-
-    const showToast = (icon, title) => {  
-            const toast = Swal.mixin({  
-                toast: true,  
-                position: 'top-end',  
-                showConfirmButton: false,  
-                timer: 3000,  
-                padding: '10px 20px',  
-            });  
-            toast.fire({  
-                icon: icon,  
-                title: title,  
-                padding: '10px 20px',  
-            });  
-        };  
+      
+        // Recalculate selisih_a jika total_invoice atau total_pengajuan berubah    
+        if (id === 'total_invoice' || id === 'total_pengajuan') {    
+            setFormData((prev) => ({    
+                ...prev,    
+                selisih_a: calculateSelisihA(prev.total_invoice, prev.total_pengajuan)    
+            }));    
+        }    
+    };   
     const handleSubmit = async (e: React.FormEvent) => {  
         e.preventDefault();  
    
@@ -407,18 +328,152 @@ const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             setIsSubmitting(false); // Reset isSubmitting  
         }  
     };  
+    
+
+    
+    
+   // Function to format the date into the desired nomor_pengajuan format
+const formatNomorPengajuan = (date: Date) => {
+    const day = date.getDate(); // Get the day
+    const month = date.getMonth() + 1; // Get the month (0-indexed, so add 1)
+    const year = date.getFullYear().toString().slice(-2); // Get the last two digits of the year
+    return `P.${day}.${month}.${year}`; // Format as P.TANGGAL.BULAN.TAHUN
+};
+
+// Update the date in formData when the date input changes
+const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {  
+    const selectedDate = new Date(e.target.value); // Get the selected date  
+    setTanggal(selectedDate); // Update the local state  
+    setFormData(prev => ({  
+        ...prev,  
+        tanggal: e.target.value, // Update formData  
+        nomor_pengajuan: formatNomorPengajuan(selectedDate) + `-${noUrut}` // Set nomor_pengajuan based on the selected date and current noUrut  
+    }));  
+};  
+
+
+    
+
+
+    const calculateSelisihA = (totalInvoice: string | number, totalPengajuan: string | number) => {
+        const invoice = Number(totalInvoice) || 0; // Convert to number, default to 0 if NaN
+        const pengajuan = Number(totalPengajuan) || 0; // Convert to number, default to 0 if NaN
+        return invoice - pengajuan; // Calculate the difference
+    };
+
+   
+    
+
+    const addAssetNonPenggajian = () => {
+        setFormData((prev) => ({
+            ...prev,
+            asset_non_penggajian: [...prev.asset_non_penggajian, { namaBiaya: '', nominal: 0 }]
+        }));
+    };
+    
+    const removeAssetNonPenggajian = (index: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            asset_non_penggajian: prev.asset_non_penggajian.filter((_, i) => i !== index)
+        }));
+    };
+    
+    const handleAssetNonPenggajianChange = (index: number, field: string, value: string | number) => {
+        const newAssetNonPenggajian = [...formData.asset_non_penggajian];
+        newAssetNonPenggajian[index][field] = value;
+        setFormData((prev) => ({ ...prev, asset_non_penggajian: newAssetNonPenggajian }));
+    };
+
+    
+    const addPengajuanLain2 = () => {
+        setFormData((prev) => ({
+            ...prev,
+            pengajuan_umum_lain2: [...prev.pengajuan_umum_lain2, { namaBiaya: '', nominal: 0 }]
+        }));
+    };
+    
+    const removePengajuanLain2 = (index: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            pengajuan_umum_lain2: prev.pengajuan_umum_lain2.filter((_, i) => i !== index)
+        }));
+    };
+    
+    const handlePengajuanLain2Change = (index: number, field: string, value: string | number) => {
+        const newPengajuanLain2 = [...formData.pengajuan_umum_lain2];
+        newPengajuanLain2[index][field] = value;
+        setFormData((prev) => ({ ...prev, pengajuan_umum_lain2: newPengajuanLain2 }));
+    };
+
+    const showToast = (icon, title) => {  
+            const toast = Swal.mixin({  
+                toast: true,  
+                position: 'top-end',  
+                showConfirmButton: false,  
+                timer: 3000,  
+                padding: '10px 20px',  
+            });  
+            toast.fire({  
+                icon: icon,  
+                title: title,  
+                padding: '10px 20px',  
+            });  
+        };  
+    
  
 
-const isFormValid = () => {
-    // Periksa apakah semua properti di formData memiliki nilai
-    return Object.values(formData).every((value) => {
-        if (Array.isArray(value)) {
-            // Jika nilai berupa array, pastikan semua elemen array terisi (khusus array objek)
-            return value.every((item) => Object.values(item).every((v) => v !== null && v !== ''));
-        }
-        return value !== null && value !== ''; // Pastikan nilai tidak null atau kosong
-    });
-};
+const isFormValid = () => {    
+    const requiredFields = [    
+        'kode_entity',    
+        'nomor_pengajuan',    
+        'tanggal',    
+        'nama_customer',    
+        'nop',    
+        'mf_5_percent',    
+        'bpjs_tk_4_24_percent',    
+        'bpjs_tk_2_percent',    
+        'pensiun_2_percent',    
+        'pensiun_1_percent',    
+        'bpjs_kes_4_percent',    
+        'bpjs_kes_1_percent',    
+        'pph21',    
+        'ppn_percent',    
+        'pot_talangan_cicilan',    
+        'pot_gaji_dimuka',    
+        'pot_privy_id',    
+        'subtotal_pengajuan_umum',    
+        'adjustment',    
+        'pph23',    
+        'subtotal_adjustment',    
+        'total_3',    
+        'gaji_gross_pph',    
+        'kompensasi_pph',    
+        'gaji_gross_non_pph',       
+        'total_bank',    
+        'total_invoice',    
+        'total_pengajuan',    
+        'selisih_a',    
+        'selisih_b',    
+        'title',    
+        'balance',    
+        // Include any other fields that are necessary for your form submission  
+    ];    
+    
+    const isValid = requiredFields.every((field) => {    
+        const value = formData[field];    
+        if (Array.isArray(value)) {    
+            return value.every((item) => Object.values(item).every((v) => v !== null && v !== ''));    
+        }    
+        return value !== null && value !== '';    
+    });    
+    
+    console.log('Form Validity:', isValid);    
+    return isValid;    
+};    
+
+
+
+
 
 
     return (
@@ -505,18 +560,19 @@ const isFormValid = () => {
                                                 className="form-input form-input-lg"
                                                 value={formData.nomor_pengajuan}
                                                 onChange={handleInputChange}
+                                                readonly
                                             />
                                         </div>
                                         <div>
                                             <label htmlFor="no_urut">Nomor Urutan</label>
-                                            <input
-                                                id="no_urut"
-                                                type="text"
-                                                placeholder="Masukan nomor pengajuan"
-                                                className="form-input form-input-lg"
-                                                value={formData.no_urut}
-                                                onChange={handleInputChange}
-                                            />
+                                            <input  
+        id="no_urut"  
+        type="number"  
+        placeholder="Masukan nomor urutan"  
+        className="form-input form-input-lg"  
+        value={noUrut} // Gunakan state noUrut  
+        onChange={handleInputChange}  
+    />  
                                         </div>
                                         
                                         <div>

@@ -32,7 +32,7 @@ import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
 import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuMore from '../Icon/Menu/IconMenuMore';
-
+import Swal from 'sweetalert2';
 const Header = () => {
     const location = useLocation();
     useEffect(() => {
@@ -137,6 +137,20 @@ const Header = () => {
     const [flag, setFlag] = useState(themeConfig.locale);
 
     const { t } = useTranslation();
+
+    const [userData, setUserData] = useState(null);  
+  
+    useEffect(() => {  
+        // Ambil data pengguna dari localStorage  
+        const storedUserData = localStorage.getItem('user_data');  
+        if (storedUserData) {  
+            setUserData(JSON.parse(storedUserData)); // Konversi string ke objek  
+        }  
+    }, []);  
+  
+    if (!userData) {  
+        return <div>Loading...</div>; // Tampilkan loading jika data belum ada  
+    }  
 
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -427,11 +441,11 @@ const Header = () => {
                                             <img className="rounded-md w-10 h-10 object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                    John Doe
+                                                   {userData?.username}
                                                     <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                                    johndoe@gmail.com
+                                                  {userData?.email}
                                                 </button>
                                             </div>
                                         </div>
@@ -455,11 +469,29 @@ const Header = () => {
                                         </Link>
                                     </li>
                                     <li className="border-t border-white-light dark:border-white-light/10">
-                                        <Link to="/auth/boxed-signin" className="text-danger !py-3">
-                                            <IconLogout className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />
-                                            Sign Out
-                                        </Link>
-                                    </li>
+                                    <button
+    onClick={() => {
+        Swal.fire({
+            title: 'Konfirmasi Logout',
+            text: 'Apakah Anda yakin ingin keluar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, keluar',
+            cancelButtonText: 'Tidak',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.clear(); // Hapus seluruh data di localStorage
+                window.location.href = '/login'; // Redirect ke halaman login
+            }
+        });
+    }}
+    className="text-danger !py-3 flex items-center"
+>
+    <IconLogout className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />
+    Sign Out
+</button>
+
+</li>
                                 </ul>
                             </Dropdown>
                         </div>
